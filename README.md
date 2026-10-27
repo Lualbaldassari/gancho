@@ -13,3 +13,4 @@ All AI calls go to the Meta Model API (`https://api.meta.ai/v1`). The `openai` P
 
 ## Progress log
 - **Day 1 (Oct 27):** first Muse Spark call, video transcription, viral formula extraction
+- **Day 1 (cont.):** script generator + self-correcting verifier agent (catches invented facts, misleading prices, copied lines; asks the owner max 5 questions)
