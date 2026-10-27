@@ -11,16 +11,29 @@ client = OpenAI(
 )
 
 video = Path(sys.argv[1])
-ficha = video.with_name(video.stem + "_formula.txt").read_text(encoding="utf-8")
+ficha = video.with_name(video.stem + "_formula.json").read_text(encoding="utf-8")
 negocio = Path("negocio.txt").read_text(encoding="utf-8")
+
+# Las respuestas de la entrevista con el dueño (si ya se hizo)
+ruta_entrevista = video.with_name(video.stem + "_entrevista.json")
+if ruta_entrevista.exists():
+    entrevista = ruta_entrevista.read_text(encoding="utf-8")
+else:
+    entrevista = "(No hubo entrevista.)"
+    print("Aviso: no encontré la entrevista. Corre antes entrevista.py.\n")
 
 instrucciones = f"""Eres un estratega de contenido de TikTok para emprendedores peruanos que recién empiezan.
 
-Esta es la fórmula de un video que se hizo viral:
+Esta es la fórmula de un video que se hizo viral (en JSON). Las partes "gancho",
+"estructura", etc. describen el video ORIGINAL y son solo referencia; la guía
+para escribir es "formula_reutilizable":
 \"\"\"{ficha}\"\"\"
 
 Este es el negocio del emprendedor:
 \"\"\"{negocio}\"\"\"
+
+Estas son las respuestas del dueño en la entrevista (en JSON):
+\"\"\"{entrevista}\"\"\"
 
 Escribe 3 guiones distintos que apliquen esa fórmula a este negocio.
 Reglas:
@@ -30,6 +43,17 @@ Reglas:
 - Nada de promesas falsas (ganancias, curas, "el mejor del Perú").
 - Español peruano natural, como habla la gente.
 - Cada guion cierra invitando a escribir por WhatsApp o a visitar el local.
+
+Reglas de datos (las más importantes):
+- Los datos del negocio (productos, ingredientes, precios, combos, clientes,
+  horarios, historias) salen SOLO del texto del negocio o de la entrevista.
+- Si un dato dice "NO TIENE", sigue su "plan_b" sin inventar el dato que falta.
+- Si aun así falta algo, escribe [CONFIRMAR: qué falta] en lugar de inventarlo.
+- Esto vale también para la columna "qué se ve": describir la escena está bien,
+  pero no muestres ni nombres productos, ingredientes o precios que no estén
+  en esos datos.
+- No digas que algo es nuevo, ni para cuántas personas alcanza, si el dueño
+  no lo dijo.
 
 Para cada guion da:
 TÍTULO Y ÁNGULO (en una línea)
