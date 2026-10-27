@@ -42,7 +42,7 @@ molde = """{
     "Paso 1: ... [hueco] ..."
   ],
   "datos_del_negocio_necesarios": [
-    {"hueco": "[nombre del hueco]", "pregunta": "...", "por_que": "..."}
+    {"hueco": "[nombre del hueco]", "pregunta": "...", "por_que": "...", "si_no_tiene": "..."}
   ]
 }"""
 
@@ -59,12 +59,21 @@ y sin bloques de código:
 
 Reglas:
 - Todo en español.
+- "gancho", "estructura", "formato", "ritmo_y_edicion", "emocion" y
+  "llamada_a_la_accion" describen el video ORIGINAL tal como es.
 - "estructura": todos los bloques del video, cada uno con su segundo aproximado.
-- "formula_reutilizable": de 4 a 6 pasos con [huecos] que cualquier emprendedor
-  pueda llenar con su propio negocio.
-- "datos_del_negocio_necesarios": un elemento por cada [hueco] de la fórmula.
-  "pregunta" es lo que le preguntaríamos al dueño: corta, en español peruano
-  sencillo y tuteando. "por_que" explica en una línea para qué sirve ese dato.
+- "formula_reutilizable": de 4 a 6 pasos que el propio DUEÑO graba con su celular
+  en su negocio (no un cliente ni un influencer que lo visita).
+- Los [huecos] deben servir para cualquier rubro (comida, ropa, belleza,
+  servicios...). Nómbralos por su función, como [producto estrella] o
+  [lo que lo hace especial], nunca por lo que sale en el video original
+  (nada de sus productos, su local ni su dirección).
+- "datos_del_negocio_necesarios": máximo 5 elementos. Si un mismo dato llena
+  varios huecos, júntalos en una sola pregunta. "pregunta" es lo que le
+  preguntaríamos al dueño: corta, en español peruano sencillo y tuteando, y que
+  sirva para un negocio chico (un puesto, una tienda o un emprendimiento en casa).
+  "por_que" explica en una línea para qué sirve ese dato. "si_no_tiene" dice
+  cómo adaptar el paso si el dueño no tiene eso.
 - No inventes nada que no se vea o escuche en el video."""
 
 respuesta = client.responses.create(
