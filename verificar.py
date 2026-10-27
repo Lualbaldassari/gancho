@@ -16,6 +16,21 @@ original = video.with_suffix(".txt").read_text(encoding="utf-8")
 guiones = video.with_name(video.stem + "_guiones.txt").read_text(encoding="utf-8")
 MAX_RONDAS = 3
 
+# Las respuestas de la entrevista también son datos reales (si ya se hizo)
+ruta_entrevista = video.with_name(video.stem + "_entrevista.json")
+if ruta_entrevista.exists():
+    entrevista = ruta_entrevista.read_text(encoding="utf-8")
+else:
+    entrevista = "(No hubo entrevista.)"
+    print("Aviso: no encontré la entrevista; solo uso negocio.txt.")
+
+# Todo lo que sabemos con certeza, junto en un solo texto
+datos_reales = f"""{negocio}
+
+RESPUESTAS DEL DUEÑO EN LA ENTREVISTA (también son datos reales; si una
+respuesta dice "NO TIENE", el negocio no tiene eso):
+{entrevista}"""
+
 
 def pedir(texto):
     return client.responses.create(model="muse-spark-1.3", input=texto).output_text
@@ -31,7 +46,7 @@ def revisar(guiones):
     respuesta = pedir(f"""Eres un verificador estricto. Revisa estos guiones de TikTok.
 
 DATOS REALES DEL NEGOCIO (lo único que se sabe con certeza):
-\"\"\"{negocio}\"\"\"
+\"\"\"{datos_reales}\"\"\"
 
 TRANSCRIPCIÓN DEL VIDEO ORIGINAL (no se puede copiar):
 \"\"\"{original}\"\"\"
@@ -40,10 +55,15 @@ GUIONES:
 \"\"\"{guiones}\"\"\"
 
 Busca solo estos problemas:
-- "inventado": un hecho sobre el negocio, la dueña o sus clientes que NO está en los datos reales
-  (historias personales, ingredientes, horarios, cosas que dijeron clientes, etc.).
-  Describir lo que se ve en cámara (ej. "el pan humeando") NO es inventado.
-- "precio": un precio o total que no cuadra con los datos reales o que puede confundir.
+- "inventado": un hecho sobre el negocio, la dueña o sus clientes que NO está en los datos reales:
+  historias personales, ingredientes, horarios, hábitos (ej. "lo pruebo todos los días"),
+  o lo que piden o piensan los clientes (ej. "me lo están pidiendo", "a la gente le gusta").
+  Describir la escena (ej. "el pan humeando") NO es inventado, pero nombrar productos,
+  ingredientes, precios o clientes que no están en los datos SÍ lo es, aunque esté en la
+  columna "qué se ve".
+  Si los datos dicen "NO TIENE", afirmar que el negocio lo tiene también es inventado.
+- "precio": un precio o total que no cuadra con los datos reales o que puede confundir
+  (ej. precios sueltos al lado de un combo sin decir cuánto cuesta el combo).
 - "copia": una frase copiada o casi igual a la transcripción original.
 - "promesa": una promesa falsa o exagerada (ganancias, salud, "el mejor").
 
@@ -62,7 +82,7 @@ def corregir(guiones, problemas):
     return pedir(f"""Corrige estos guiones de TikTok. Mantén el mismo formato, tono y estructura.
 
 DATOS REALES DEL NEGOCIO:
-\"\"\"{negocio}\"\"\"
+\"\"\"{datos_reales}\"\"\"
 
 PROBLEMAS A CORREGIR:
 {json.dumps(problemas, ensure_ascii=False, indent=2)}
@@ -72,6 +92,7 @@ Reglas:
 - Si un precio confunde, usa solo los precios reales y aclara qué incluye.
 - Si hay una frase copiada, reescríbela con otras palabras.
 - No agregues ningún dato nuevo que no esté en los datos reales.
+- No quites datos que sí están en los datos reales si no son parte de un problema.
 
 GUIONES:
 \"\"\"{guiones}\"\"\"
@@ -80,15 +101,20 @@ Devuelve solo los guiones corregidos.""")
 
 
 def resumir_preguntas(preguntas):
-    """Muse junta las preguntas repetidas y deja solo las 5 más importantes."""
+    """Muse descarta lo ya respondido, junta las repetidas y deja máximo 5."""
     respuesta = pedir(f"""Estas son preguntas para la dueña de un negocio antes de grabar sus videos de TikTok.
 Muchas se repiten o dicen lo mismo con otras palabras:
 
 {json.dumps(preguntas, ensure_ascii=False, indent=2)}
 
-Júntalas y devuelve como máximo 5, las más importantes para poder grabar.
+Esto ya lo sabemos, así que NO lo vuelvas a preguntar:
+\"\"\"{datos_reales}\"\"\"
+
+Descarta las preguntas que ya están respondidas arriba, junta las repetidas y devuelve
+como máximo 5, las más importantes para poder grabar.
 Escríbelas cortas y en un tono amable, como se las diría alguien por WhatsApp.
-Responde SOLO con JSON: {{"preguntas": ["...", "..."]}}""")
+Responde SOLO con JSON: {{"preguntas": ["...", "..."]}}
+Si no queda ninguna: {{"preguntas": []}}""")
     return leer_json(respuesta)["preguntas"]
 
 
@@ -112,6 +138,10 @@ salida.write_text(guiones, encoding="utf-8")
 print(f"\nGuiones finales guardados en {salida}")
 
 if preguntas:
-    print("\nPreguntas para la dueña antes de grabar:")
-    for q in resumir_preguntas(preguntas):
-        print(f"- {q}")
+    finales = resumir_preguntas(preguntas)
+    if finales:
+        print("\nPreguntas para la dueña antes de grabar:")
+        for q in finales:
+            print(f"- {q}")
+    else:
+        print("\nNo hay preguntas pendientes: todo lo necesario ya lo sabemos.")
