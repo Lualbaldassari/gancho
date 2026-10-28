@@ -1,0 +1,27 @@
+[
+  {
+    "hueco": "[producto estrella]",
+    "respuesta": "Lo que más sale son los conjuntos en negro y beige.",
+    "fuente": "ropa.txt"
+  },
+  {
+    "hueco": "[punto de venta]",
+    "respuesta": "Tienda de ropa \"Moda Lucero\" en Gamarra, galería Santa Rosa, tienda 210. Venden en tienda y por WhatsApp, hacen envíos a todo Lima.",
+    "fuente": "ropa.txt"
+  },
+  {
+    "hueco": "[combo para compartir]",
+    "respuesta": "pack amigas: 2 polos oversize por S/ 60",
+    "fuente": "dueño"
+  },
+  {
+    "hueco": "[el extra irresistible]",
+    "respuesta": "les muestro cómo horma la tela estirándola en cámara",
+    "fuente": "dueño"
+  },
+  {
+    "hueco": "[lo que lo hace especial]",
+    "respuesta": "tela gruesa que no se transparenta, hecha en Gamarra",
+    "fuente": "dueño"
+  }
+]

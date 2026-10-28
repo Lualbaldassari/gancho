@@ -1,0 +1,6 @@
+# Dependencias Python de Gancho (probar con 3.10+; repo usa 3.14).
+# Sistema aparte: ffmpeg (audio y frames). sudo apt install ffmpeg / brew install ffmpeg.
+# Tests en tests/ solo usan stdlib: .venv/bin/python -m unittest discover tests
+openai>=1.0.0
+python-dotenv>=1.0.0
+requests>=2.31.0

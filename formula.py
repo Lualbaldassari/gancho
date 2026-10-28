@@ -1,30 +1,17 @@
-import os, sys, json
+"""Paso 2: video + transcripción → ficha de fórmula viral en JSON (Muse Spark).
+
+CLI:  python formula.py videos/prueba.mp4
+API:  extraer_formula(video) -> dict de la ficha
+"""
+
+import sys
 from pathlib import Path
-from dotenv import load_dotenv
-from openai import OpenAI
 
-load_dotenv()
+from common import (REINTENTOS_API, artefacto, get_client, guardar_json,
+                    guardar_texto, leer_json_seguro, validar_video,
+                    MODELO_SPARK)
 
-client = OpenAI(
-    base_url="https://api.meta.ai/v1",
-    api_key=os.environ["MODEL_API_KEY"],
-)
-
-video = Path(sys.argv[1])
-transcripcion = video.with_suffix(".txt").read_text(encoding="utf-8")
-
-# 1. Subir el video (se borra solo en 1 hora)
-with open(video, "rb") as f:
-    archivo = client.files.create(
-        purpose="user_data",
-        file=f,
-        expires_after={"anchor": "created_at", "seconds": 3600},
-    )
-print(f"Video subido: {archivo.id}\n")
-
-# 2. Molde de la ficha. Es un texto normal (no f-string) para no tener que
-#    duplicar las llaves { } del JSON.
-molde = """{
+MOLDE = """{
   "gancho": {
     "segundos": "0-3",
     "que_se_ve": "...",
@@ -46,8 +33,33 @@ molde = """{
   ]
 }"""
 
-# 3. Pedir la ficha de fórmula viral en JSON
-instrucciones = f"""Eres un estratega de contenido de TikTok para emprendedores peruanos.
+
+def extraer_formula(video: Path, forzar: bool = False) -> dict:
+    import json
+
+    salida_json = artefacto(video, "_formula.json")
+    if salida_json.exists() and not forzar:
+        print(f"Ya existe {salida_json}, la reutilizo (--forzar para rehacer).")
+        return json.loads(salida_json.read_text(encoding="utf-8"))
+
+    transcripcion_path = video.with_suffix(".txt")
+    if not transcripcion_path.exists():
+        sys.exit(f"Falta la transcripción: corre antes transcribir.py sobre {video}")
+    transcripcion = transcripcion_path.read_text(encoding="utf-8")
+
+    client = get_client()
+
+    # 1. Subir el video (se borra solo en 1 hora)
+    with open(video, "rb") as f:
+        archivo = client.files.create(
+            purpose="user_data",
+            file=f,
+            expires_after={"anchor": "created_at", "seconds": 3600},
+        )
+    print(f"Video subido: {archivo.id}\n")
+
+    # 2. Pedir la ficha de fórmula viral en JSON
+    instrucciones = f"""Eres un estratega de contenido de TikTok para emprendedores peruanos.
 Mira el video y usa esta transcripción de lo que se dice:
 
 \"\"\"{transcripcion}\"\"\"
@@ -55,7 +67,7 @@ Mira el video y usa esta transcripción de lo que se dice:
 Responde SOLO con un JSON válido que siga este molde, sin texto antes ni después
 y sin bloques de código:
 
-{molde}
+{MOLDE}
 
 Reglas:
 - Todo en español.
@@ -76,32 +88,52 @@ Reglas:
   cómo adaptar el paso si el dueño no tiene eso.
 - No inventes nada que no se vea o escuche en el video."""
 
-respuesta = client.responses.create(
-    model="muse-spark-1.3",
-    input=[{
-        "type": "message",
-        "role": "user",
-        "content": [
-            {"type": "input_text", "text": instrucciones},
-            {"type": "input_video", "file_id": archivo.id},
-        ],
-    }],
-)
+    ficha = None
+    texto = ""
+    for intento in range(1, REINTENTOS_API + 1):
+        respuesta = client.responses.create(
+            model=MODELO_SPARK,
+            input=[{
+                "type": "message",
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": instrucciones},
+                    {"type": "input_video", "file_id": archivo.id},
+                ],
+            }],
+        )
+        texto = respuesta.output_text
+        try:
+            candidata = leer_json_seguro(texto)
+            faltan = {"formula_reutilizable", "datos_del_negocio_necesarios",
+                      "gancho", "formato"} - set(candidata)
+            if faltan:
+                raise ValueError(f"faltan claves: {sorted(faltan)}")
+            ficha = candidata
+            break
+        except (ValueError, json.JSONDecodeError) as e:
+            if intento < REINTENTOS_API:
+                print(f"  ⚠ fórmula inválida ({e}); reintento {intento + 1}…")
+    if ficha is None:
+        artefacto(video, "_formula_error.txt").write_text(texto, encoding="utf-8")
+        sys.exit("La respuesta no vino en JSON válido. La guardé en "
+                 "_formula_error.txt para revisarla.")
 
-texto = respuesta.output_text
+    # 4. Guardar: .json para los siguientes pasos y .txt para inspección
+    import json as _json
 
-# 4. Convertir la respuesta en datos. A veces el modelo agrega texto alrededor,
-#    así que nos quedamos con lo que va de la primera { a la última }.
-inicio = texto.find("{")
-fin = texto.rfind("}") + 1
-try:
-    ficha = json.loads(texto[inicio:fin])
-except json.JSONDecodeError:
-    video.with_name(video.stem + "_formula_error.txt").write_text(texto, encoding="utf-8")
-    sys.exit("La respuesta no vino en JSON válido. La guardé en _formula_error.txt para revisarla.")
+    bonito = _json.dumps(ficha, ensure_ascii=False, indent=2)
+    print(bonito)
+    guardar_json(salida_json, ficha)
+    guardar_texto(artefacto(video, "_formula.txt"), bonito)
+    return ficha
 
-# 5. Guardar: .json para los siguientes pasos y .txt para que crear_video.py siga funcionando
-bonito = json.dumps(ficha, ensure_ascii=False, indent=2)
-print(bonito)
-video.with_name(video.stem + "_formula.json").write_text(bonito, encoding="utf-8")
-video.with_name(video.stem + "_formula.txt").write_text(bonito, encoding="utf-8")
+
+def main() -> None:
+    if len(sys.argv) != 2:
+        sys.exit("Uso: python formula.py <video.mp4>")
+    extraer_formula(validar_video(sys.argv[1]))
+
+
+if __name__ == "__main__":
+    main()

@@ -1,48 +1,94 @@
-import json, os, re, sys
+"""Paso 5: verificador auto-corrector — revisa, corrige y pregunta (máx 5).
+
+CLI:  python verificar.py videos/prueba.mp4 [--negocio negocios/jugueria.txt]
+API:  verificar(video, negocio_path) -> (guiones_finales, preguntas)
+"""
+
+import json
+import re
+import sys
 from pathlib import Path
-from dotenv import load_dotenv
-from openai import OpenAI
 
-load_dotenv()
+from common import (artefacto, guardar_json, guardar_texto, leer_json_seguro,
+                    pedir, validar_negocio, validar_video)
 
-client = OpenAI(
-    base_url="https://api.meta.ai/v1",
-    api_key=os.environ["MODEL_API_KEY"],
-)
-
-video = Path(sys.argv[1])
-negocio = Path("negocio.txt").read_text(encoding="utf-8")
-original = video.with_suffix(".txt").read_text(encoding="utf-8")
-guiones = video.with_name(video.stem + "_guiones.txt").read_text(encoding="utf-8")
 MAX_RONDAS = 3
 
-# Las respuestas de la entrevista también son datos reales (si ya se hizo)
-ruta_entrevista = video.with_name(video.stem + "_entrevista.json")
-if ruta_entrevista.exists():
-    entrevista = ruta_entrevista.read_text(encoding="utf-8")
-else:
-    entrevista = "(No hubo entrevista.)"
-    print("Aviso: no encontré la entrevista; solo uso negocio.txt.")
+# Precios tipo S/ 8, S/8.50, s/. 120 — los comparamos exactos contra datos reales
+RE_PRECIO = re.compile(r"S/\s?\.?\s?\d+(?:[.,]\d{1,2})?", re.IGNORECASE)
+RE_CONFIRMAR = re.compile(r"\[CONFIRMAR:[^\]]*\]")
 
-# Todo lo que sabemos con certeza, junto en un solo texto
-datos_reales = f"""{negocio}
+
+def cargar_datos(video: Path, negocio_path: Path) -> tuple[str, str, str]:
+    negocio = negocio_path.read_text(encoding="utf-8")
+    original = video.with_suffix(".txt").read_text(encoding="utf-8")
+    ruta_guiones = artefacto(video, f"_guiones_{negocio_path.stem}.txt")
+    if not ruta_guiones.exists():
+        ruta_guiones = artefacto(video, "_guiones.txt")
+    guiones = ruta_guiones.read_text(encoding="utf-8")
+
+    ruta_entrevista = artefacto(video, f"_entrevista_{negocio_path.stem}.json")
+    if ruta_entrevista.exists():
+        entrevista = ruta_entrevista.read_text(encoding="utf-8")
+    elif artefacto(video, "_entrevista.json").exists():
+        entrevista = artefacto(video, "_entrevista.json").read_text(encoding="utf-8")
+    else:
+        entrevista = "(No hubo entrevista.)"
+        print("Aviso: no encontré la entrevista; solo uso el texto del negocio.")
+
+    datos_reales = f"""{negocio}
 
 RESPUESTAS DEL DUEÑO EN LA ENTREVISTA (también son datos reales; si una
 respuesta dice "NO TIENE", el negocio no tiene eso):
 {entrevista}"""
+    return datos_reales, original, guiones
 
 
-def pedir(texto):
-    return client.responses.create(model="muse-spark-1.3", input=texto).output_text
+def _sin_confirmar(texto: str) -> str:
+    """Quita los bloques [CONFIRMAR: …]: ya están marcados, no son errores."""
+    return RE_CONFIRMAR.sub("", texto)
 
 
-def leer_json(texto):
-    limpio = re.sub(r"^```(json)?|```$", "", texto.strip(), flags=re.M).strip()
-    return json.loads(limpio)
+def chequeo_precios(guiones: str, datos_reales: str) -> list:
+    """Determinista (sin API): todo precio del guion debe estar en los datos."""
+    reales = {p.upper().replace(" ", "") for p in RE_PRECIO.findall(datos_reales)}
+    problemas = []
+    for precio in set(RE_PRECIO.findall(_sin_confirmar(guiones))):
+        if precio.upper().replace(" ", "") not in reales:
+            problemas.append({
+                "tipo": "precio",
+                "frase": precio,
+                "explicacion": f"El precio {precio} no aparece en los datos reales.",
+                "pregunta_para_dueno": f"¿Cuánto cuesta exactamente? (vi {precio} sin confirmar)",
+                "origen": "regla",
+            })
+    return problemas
 
 
-def revisar(guiones):
-    """Muse revisa los guiones y devuelve una lista de problemas en JSON."""
+def chequeo_copia(guiones: str, original: str, n: int = 6) -> list:
+    """Determinista (sin API): frases de n+ palabras copiadas del original."""
+    def ngramas(texto: str) -> set:
+        pals = re.findall(r"\w+", texto.lower())
+        return {" ".join(pals[i:i + n]) for i in range(len(pals) - n + 1)}
+
+    original_ng = ngramas(original)
+    problemas = []
+    for linea in _sin_confirmar(guiones).splitlines():
+        for ng in ngramas(linea):
+            if ng in original_ng:
+                problemas.append({
+                    "tipo": "copia",
+                    "frase": linea.strip()[:160],
+                    "explicacion": f"Frase casi igual al video original («…{ng}…»).",
+                    "pregunta_para_dueno": "",
+                    "origen": "regla",
+                })
+                break
+    return problemas
+
+
+def revisar(guiones: str, datos_reales: str, original: str) -> list:
+    """Reglas deterministas + Muse; devuelve lista de problemas en JSON."""
     respuesta = pedir(f"""Eres un verificador estricto. Revisa estos guiones de TikTok.
 
 DATOS REALES DEL NEGOCIO (lo único que se sabe con certeza):
@@ -74,10 +120,19 @@ Responde SOLO con JSON, sin texto antes ni después, con esta forma:
 {{"problemas": [{{"tipo": "...", "frase": "texto exacto del guion",
   "explicacion": "...", "pregunta_para_dueno": "pregunta corta, o vacío si no aplica"}}]}}
 Si no hay problemas: {{"problemas": []}}""")
-    return leer_json(respuesta)["problemas"]
+    try:
+        de_modelo = leer_json_seguro(respuesta).get("problemas", [])
+    except (ValueError, json.JSONDecodeError):
+        print("  ⚠ el revisor no devolvió JSON; solo aplican las reglas.")
+        de_modelo = []
+    for p in de_modelo:
+        p.setdefault("origen", "modelo")
+    # Reglas primero (deterministas, auditables), luego el modelo.
+    return chequeo_precios(guiones, datos_reales) + \
+        chequeo_copia(guiones, original) + de_modelo
 
 
-def corregir(guiones, problemas):
+def corregir(guiones: str, problemas: list, datos_reales: str) -> str:
     """Muse reescribe los guiones arreglando cada problema."""
     return pedir(f"""Corrige estos guiones de TikTok. Mantén el mismo formato, tono y estructura.
 
@@ -100,7 +155,7 @@ GUIONES:
 Devuelve solo los guiones corregidos.""")
 
 
-def resumir_preguntas(preguntas):
+def resumir_preguntas(preguntas: list, datos_reales: str) -> list:
     """Muse descarta lo ya respondido, junta las repetidas y deja máximo 5."""
     respuesta = pedir(f"""Estas son preguntas para la dueña de un negocio antes de grabar sus videos de TikTok.
 Muchas se repiten o dicen lo mismo con otras palabras:
@@ -115,33 +170,66 @@ como máximo 5, las más importantes para poder grabar.
 Escríbelas cortas y en un tono amable, como se las diría alguien por WhatsApp.
 Responde SOLO con JSON: {{"preguntas": ["...", "..."]}}
 Si no queda ninguna: {{"preguntas": []}}""")
-    return leer_json(respuesta)["preguntas"]
+    return leer_json_seguro(respuesta)["preguntas"]
 
 
-preguntas = []
-for ronda in range(1, MAX_RONDAS + 1):
-    problemas = revisar(guiones)
-    print(f"\n--- Ronda {ronda}: {len(problemas)} problema(s) ---")
-    for p in problemas:
-        print(f"[{p['tipo']}] {p['frase']}\n   -> {p['explicacion']}")
-        if p.get("pregunta_para_dueno"):
-            preguntas.append(p["pregunta_para_dueno"])
-    if not problemas:
-        print("Guiones aprobados.")
-        break
-    guiones = corregir(guiones, problemas)
-else:
-    print("\nSe alcanzó el máximo de rondas; revisa a mano lo que quede.")
+def verificar(video: Path, negocio_path: Path, forzar: bool = False) -> tuple[str, list]:
+    sufijo = f"_guiones_verificados_{negocio_path.stem}.txt"
+    salida = artefacto(video, sufijo)
+    ruta_preguntas = artefacto(video, f"_preguntas_{negocio_path.stem}.json")
+    if salida.exists() and ruta_preguntas.exists() and not forzar:
+        print(f"Ya existe {salida}, la reutilizo (--forzar para rehacer).")
+        return salida.read_text(encoding="utf-8"), json.loads(ruta_preguntas.read_text(encoding="utf-8"))
 
-salida = video.with_name(video.stem + "_guiones_verificados.txt")
-salida.write_text(guiones, encoding="utf-8")
-print(f"\nGuiones finales guardados en {salida}")
+    datos_reales, original, guiones = cargar_datos(video, negocio_path)
 
-if preguntas:
-    finales = resumir_preguntas(preguntas)
-    if finales:
-        print("\nPreguntas para la dueña antes de grabar:")
-        for q in finales:
-            print(f"- {q}")
+    preguntas: list = []
+    rondas: list = []
+    for ronda in range(1, MAX_RONDAS + 1):
+        problemas = revisar(guiones, datos_reales, original)
+        print(f"\n--- Ronda {ronda}: {len(problemas)} problema(s) ---")
+        for p in problemas:
+            print(f"[{p['tipo']}/{p.get('origen', '?')}] {p['frase']}\n   -> {p['explicacion']}")
+            if p.get("pregunta_para_dueno"):
+                preguntas.append(p["pregunta_para_dueno"])
+        rondas.append({"ronda": ronda,
+                       "problemas": [(p.get("tipo"), p.get("origen")) for p in problemas]})
+        if not problemas:
+            print("Guiones aprobados.")
+            break
+        guiones = corregir(guiones, problemas, datos_reales)
     else:
-        print("\nNo hay preguntas pendientes: todo lo necesario ya lo sabemos.")
+        print("\nSe alcanzó el máximo de rondas; revisa a mano lo que quede.")
+
+    guardar_json(artefacto(video, f"_reporte_verificacion_{negocio_path.stem}.json"),
+                 {"rondas": rondas, "preguntas_candidatas": preguntas})
+    guardar_texto(salida, guiones)
+    guardar_texto(artefacto(video, "_guiones_verificados.txt"), guiones)
+    print(f"\nGuiones finales guardados en {salida}")
+
+    finales: list = []
+    if preguntas:
+        finales = resumir_preguntas(preguntas, datos_reales)
+        if finales:
+            print("\nPreguntas para la dueña antes de grabar:")
+            for q in finales:
+                print(f"- {q}")
+        else:
+            print("\nNo hay preguntas pendientes: todo lo necesario ya lo sabemos.")
+    guardar_json(ruta_preguntas, finales)
+    return guiones, finales
+
+
+def main() -> None:
+    args = sys.argv[1:]
+    if not args:
+        sys.exit("Uso: python verificar.py <video.mp4> [--negocio <txt>]")
+    video = validar_video(args[0])
+    negocio_path = Path("negocio.txt")
+    if "--negocio" in args:
+        negocio_path = validar_negocio(args[args.index("--negocio") + 1])
+    verificar(video, negocio_path)
+
+
+if __name__ == "__main__":
+    main()

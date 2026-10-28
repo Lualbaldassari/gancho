@@ -1,0 +1,35 @@
+{
+  "rondas": [
+    {
+      "ronda": 1,
+      "problemas": [
+        [
+          "inventado",
+          "modelo"
+        ],
+        [
+          "inventado",
+          "modelo"
+        ],
+        [
+          "precio",
+          "modelo"
+        ],
+        [
+          "inventado",
+          "modelo"
+        ]
+      ]
+    },
+    {
+      "ronda": 2,
+      "problemas": []
+    }
+  ],
+  "preguntas_candidatas": [
+    "¿Te están pidiendo mucho el combo?",
+    "¿Así le gusta a la gente?",
+    "¿Cuánto cuesta el combo?",
+    "¿Lo pruebas todos los días?"
+  ]
+}

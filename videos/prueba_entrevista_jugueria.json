@@ -1,0 +1,27 @@
+[
+  {
+    "hueco": "[punto de venta]",
+    "respuesta": "Juguería \"Doña Rosa\" en el mercado de Surquillo, puesto 45.",
+    "fuente": "negocio.txt"
+  },
+  {
+    "hueco": "[combo para compartir]",
+    "respuesta": "Si, trae dos panes con chicharron y jugo surtido",
+    "fuente": "dueño"
+  },
+  {
+    "hueco": "[producto estrella]",
+    "respuesta": "jugo surtido y maracuya",
+    "fuente": "dueño"
+  },
+  {
+    "hueco": "[el extra irresistible]",
+    "respuesta": "mas esencia de fruta",
+    "fuente": "dueño"
+  },
+  {
+    "hueco": "[lo que lo hace especial]",
+    "respuesta": "frutas frescas y ese toque casero",
+    "fuente": "dueño"
+  }
+]

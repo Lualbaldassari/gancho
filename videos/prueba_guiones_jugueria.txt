@@ -1,0 +1,42 @@
+**GUION 1**
+
+**TÍTULO Y ÁNGULO: Les armo mi combo aquí mismo en el puesto - desayuno hecho por mí.**
+
+**TOMAS:**
+* **0-4s | qué se ve:** Doña Rosa de frente a cámara, celular apoyado en su mostrador del puesto 45 del mercado de Surquillo. Atrás se ven sus jarras y su mesa de trabajo. | **qué se dice:** "Hola, soy Rosa, del puesto 45 del mercado de Surquillo. Les muestro el combo que me están pidiendo." | **texto en pantalla:** Doña Rosa - Puesto 45 - Mercado de Surquillo
+* **4-15s | qué se ve:** Plano cerrado de sus manos armando sobre el mostrador dos panes con chicharrón y vaso(s) de jugo surtido. No se ve precio. | **qué se dice:** "El combo trae dos panes con chicharrón y jugo surtido. [CONFIRMAR: cuántos vasos de jugo surtido trae y precio del combo]" | **texto en pantalla:** Trae 2 panes con chicharrón + jugo surtido
+* **15-25s | qué se ve:** Primerísimo plano del vaso de jugo surtido, ella le echa un chorrito más de esencia de fruta. Se ve cómo cae al vaso. | **qué se dice:** "Y acá le pongo su esencia de fruta, así como le gusta a la gente." | **texto en pantalla:** con su esencia de fruta
+* **25-35s | qué se ve:** Ella misma prueba el jugo surtido frente a cámara, luego muerde un poco el pan con chicharrón. | **qué se dice:** "A mí me encanta porque lo hago con frutas frescas y ese toque casero." | **texto en pantalla:** frutas frescas, toque casero
+* **35-45s | qué se ve:** Ella sonríe, señala su puesto y luego señala hacia la cámara. | **qué se dice:** "Estoy en el mercado de Surquillo, puesto 45. Si quieres, escríbeme al WhatsApp de mi perfil o date una vuelta y etiqueta con quién vendrías. [CONFIRMAR: horario de atención]" | **texto en pantalla:** Puesto 45 Surquillo / WhatsApp en mi perfil
+
+**POR QUÉ PUEDE FUNCIONAR:** Provoca antojo mostrando el armado real en el puesto y con la dueña probando su propio producto.
+
+---
+
+**GUION 2**
+
+**TÍTULO Y ÁNGULO: Cómo te preparo mi surtido con kion - mi más pedido.**
+
+**TOMAS:**
+* **0-4s | qué se ve:** Doña Rosa detrás de su licuadora en el puesto 45, celular apoyado, saluda a cámara. | **qué se dice:** "Soy Rosa, del mercado de Surquillo, puesto 45. Hoy les enseño cómo les preparo el combo." | **texto en pantalla:** Soy Doña Rosa - Puesto 45
+* **4-16s | qué se ve:** Plano cerrado del mostrador: pone los dos panes con chicharrón en plato y sirve el jugo surtido en vaso. Solo se muestran esos productos. | **qué se dice:** "Miren, pongo los dos panes con chicharrón y el jugo surtido. El pan con chicharrón está a 6 soles y el jugo especial a 8 soles." | **texto en pantalla:** pan con chicharrón S/6 / jugo especial S/8
+* **16-26s | qué se ve:** Enfoque bien cerquita al vaso de jugo surtido con kion y al vaso de maracuyá, les agrega más esencia de fruta por encima. | **qué se dice:** "Acá están mis favoritos que más salen, el surtido con kion y el de maracuyá, y les aumento su esencia de fruta." | **texto en pantalla:** surtido con kion y maracuyá
+* **26-36s | qué se ve:** Ella toma el surtido con kion frente a cámara, gesto de que le gusta. | **qué se dice:** "Lo tomo yo misma porque me gusta así, con frutas frescas y ese toque casero que le doy." | **texto en pantalla:** frutas frescas
+* **36-45s | qué se ve:** Muestra el puesto y hace gesto de escribir por celular. | **qué se dice:** "Ya saben, caseritos, me encuentran en Surquillo, puesto 45, o me escriben al WhatsApp de mi perfil para consultas." | **texto en pantalla:** Visítanos puesto 45 / WhatsApp en el perfil
+
+**POR QUÉ PUEDE FUNCIONAR:** Enseña el producto estrella que ya se vende bien y el extra en primer plano genera antojo sin salir del puesto.
+
+---
+
+**GUION 3**
+
+**TÍTULO Y ÁNGULO: Si eres joven y pasas por el mercado, te invito a mi puesto - soy nueva por aquí.**
+
+**TOMAS:**
+* **0-5s | qué se ve:** Doña Rosa grabándose sola con el celular en mano dentro del mercado de Surquillo, se ve el letrero del puesto 45 al fondo. | **qué se dice:** "Hola jóvenes, soy doña Rosa, del puesto 45 del mercado de Surquillo, abrí hace 3 meses y les quiero mostrar mi combo." | **texto en pantalla:** Abrí hace 3 meses - Puesto 45
+* **5-15s | qué se ve:** Apoya el celular y muestra cómo arma en su mesa los dos panes con chicharrón junto al jugo surtido. | **qué se dice:** "Les armo acá mismo: dos panes con chicharrón y jugo surtido. [CONFIRMAR: precio del combo]" | **texto en pantalla:** 2 panes con chicharrón + jugo surtido
+* **15-25s | qué se ve:** Plano cerrado de su mano echando más esencia de fruta sobre el jugo surtido, se ve la caída del chorro. | **qué se dice:** "Miren este colorcito, le pongo más esencia de fruta para que quede rico." | **texto en pantalla:** su esencia de fruta
+* **25-35s | qué se ve:** Prueba el jugo y luego un bocado del pan, mirando a cámara. | **qué se dice:** "Yo misma lo pruebo todos los días, me gusta porque es con frutas frescas y tiene ese toque casero." | **texto en pantalla:** toque casero
+* **35-45s | qué se ve:** Se despide señalando la entrada del mercado y su puesto. | **qué se dice:** "Ya pues, dense una vuelta por el puesto 45 o escríbanme al WhatsApp de mi perfil, y etiqueten con quién vendrían." | **texto en pantalla:** Puesto 45 Surquillo / Escríbeme al WhatsApp
+
+**POR QUÉ PUEDE FUNCIONAR:** La invitación directa de la dueña que recién empieza crea cercanía con público joven que aún no la conoce.

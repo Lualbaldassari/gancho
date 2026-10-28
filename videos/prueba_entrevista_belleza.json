@@ -1,0 +1,27 @@
+[
+  {
+    "hueco": "[punto de venta]",
+    "respuesta": "Salón de belleza \"Divas\" en Villa El Salvador, av. Central 450, segundo piso.",
+    "fuente": "belleza.txt"
+  },
+  {
+    "hueco": "[combo para compartir]",
+    "respuesta": "dúo amigas: 2 laceados con 20% de descuento martes y miércoles",
+    "fuente": "dueño"
+  },
+  {
+    "hueco": "[producto estrella]",
+    "respuesta": "laceado japonés",
+    "fuente": "dueño"
+  },
+  {
+    "hueco": "[el extra irresistible]",
+    "respuesta": "el brillo final con el cepillo, se ve en primer plano",
+    "fuente": "dueño"
+  },
+  {
+    "hueco": "[lo que lo hace especial]",
+    "respuesta": "laceado que dura 3 meses, producto sin formol",
+    "fuente": "dueño"
+  }
+]

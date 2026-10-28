@@ -1,5 +1,21 @@
 .env
 .venv/
-videos/
-*.wav
 __pycache__/
+*.wav
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.png
+*.jpg
+# El video canónico de la demo sí viaja con el repo (demo_vivo.sh lo necesita).
+!videos/prueba.mp4
+# Portadas generadas para la demo (ver --con-portadas) también se versionan.
+!videos/*_portada*.png
+# Intermedios de SAM / errores: no versionar.
+videos/*_frame.png
+videos/*_64.raw
+videos/*_error.txt
+outbox/
+demo_outbox/
+*:Zone.Identifier

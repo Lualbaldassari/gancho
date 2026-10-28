@@ -1,0 +1,93 @@
+{
+  "gancho": {
+    "segundos": "0-3",
+    "que_se_ve": "Plano cerrado de la bandeja con hamburguesas envueltas en foil, papas con tocino, chicken chunks y salsas, con texto en pantalla NOS FUIMOS a Big Boy, y la chica mordiendo la hamburguesa",
+    "que_se_dice": "Nos fuimos a Big Boy en su local de San Miguel porque nos contaron que tienen un nuevo combo disponible para dos que se llama el Double Big Bite",
+    "por_que_funciona": "Junta lugar conocido más novedad más combo para dos y muestra comida antojable de inmediato, lo que da curiosidad y ganas de seguir viendo"
+  },
+  "estructura": [
+    {
+      "segundos": "0-3",
+      "bloque": "gancho",
+      "que_pasa": "Muestran la bandeja llena y primeros mordiscos con el texto NOS FUIMOS a Big Boy mientras presentan el nuevo combo Double Big Bite"
+    },
+    {
+      "segundos": "3-7",
+      "bloque": "ubicación",
+      "que_pasa": "Muestran la fachada de noche del local de Big Boy y el texto Calle Ucayali 142, San Miguel, luego el interior con gente comiendo"
+    },
+    {
+      "segundos": "7-14",
+      "bloque": "detalle del combo",
+      "que_pasa": "Enfocan la carta de COMBOS y SIDES y de BURGERS, y luego la bandeja servida mientras explican que trae dos hamburguesas a elección, dos porciones de papas, dos bebidas, nueve chicken chunks y salsas signature y clásicas"
+    },
+    {
+      "segundos": "14-20",
+      "bloque": "prueba de chicken chunks",
+      "que_pasa": "Un amigo prueba los chicken chunks con salsa y dicen que todo estuvo buenazo y que este tipo de combos son perfectos para compartir"
+    },
+    {
+      "segundos": "20-28",
+      "bloque": "papas personalizadas",
+      "que_pasa": "Muestran cómo a las papas le añaden tocino y queso cheddar por encima, echan el queso en plano cerrado y la pareja las prueba"
+    },
+    {
+      "segundos": "28-40",
+      "bloque": "presentación de hamburguesas",
+      "que_pasa": "Desenvuelven las dos hamburguesas elegidas, la Big Bacon y la Super Boy, las muestran bien contundentes por dentro con carne, queso derretido, tocino y cebolla caramelizada"
+    },
+    {
+      "segundos": "40-53",
+      "bloque": "prueba con amigos",
+      "que_pasa": "Cuentan que saliendo de clases invitaron a unos amigos a probar por primera vez y se ven las reacciones de todos mordiendo las hamburguesas y disfrutando"
+    },
+    {
+      "segundos": "53-59",
+      "bloque": "cierre e invitación",
+      "que_pasa": "Muestran el letrero REAL AMERICAN BURGERS y la barra del local mientras cierran diciendo que a los amigos les encantó y que el espectador tiene que ir a Big Boy"
+    }
+  ],
+  "formato": "reseña",
+  "ritmo_y_edicion": "Ritmo rápido con muchos cortes cortos, planos cerrados de comida chorreando queso y carne, textos grandes en pantalla con nombres del local, dirección y contenido del combo, y tomas de varias personas comiendo y reaccionando",
+  "emocion": "Antojo, disfrute y pata para compartir, con tono alegre de amigos saliendo de clases que recomiendan su lugar favorito",
+  "llamada_a_la_accion": "Directa al final: ahora que ya tienes el dato tienes que venir tú a Big Boy",
+  "formula_reutilizable": [
+    "Paso 1: Grábate en tu [punto de venta] y presenta a cámara tu [combo para compartir] contando que es nuevo y para cuántas personas alcanza.",
+    "Paso 2: Muestra en plano cerrado cómo armas tu [combo para compartir] sobre tu mesa o mostrador y di en voz alta todo lo que incluye.",
+    "Paso 3: Agrega en vivo [el extra irresistible] sobre tu [producto estrella] y enfoca bien de cerca cómo cae para provocar antojo.",
+    "Paso 4: Prueba tú mismo tu [producto estrella] frente a cámara y cuenta por qué es tu favorito gracias a [lo que lo hace especial].",
+    "Paso 5: Cierra invitando a que vengan a tu [punto de venta] y que etiqueten con quién vendrían a compartirlo."
+  ],
+  "datos_del_negocio_necesarios": [
+    {
+      "hueco": "[combo para compartir]",
+      "pregunta": "¿Tienes algún combo o pack ideal para 2? ¿Qué trae?",
+      "por_que": "Sirve para presentar la novedad y listar lo que incluye.",
+      "si_no_tiene": "Junta tus 2 productos que más salen y preséntalo como pack para compartir."
+    },
+    {
+      "hueco": "[producto estrella]",
+      "pregunta": "¿Cuáles son tus 2 productos que más salen y la gente más pide?",
+      "por_que": "Sirve para mostrar los favoritos como se muestran las dos hamburguesas.",
+      "si_no_tiene": "Elige los 2 que más quieres impulsar y muéstralos como tus favoritos."
+    },
+    {
+      "hueco": "[el extra irresistible]",
+      "pregunta": "¿Qué extra o agregado le pones encima que lo hace ver más rico?",
+      "por_que": "Sirve para crear el momento del derrame que provoca antojo.",
+      "si_no_tiene": "Enfoca de cerca cómo echas tu salsa o ingrediente principal."
+    },
+    {
+      "hueco": "[lo que lo hace especial]",
+      "pregunta": "¿Qué tiene de especial tu producto que lo hace diferente y rico?",
+      "por_que": "Sirve para contar por qué te encanta y convencer con un detalle.",
+      "si_no_tiene": "Cuenta por qué a ti te gusta: sabor, tamaño o textura."
+    },
+    {
+      "hueco": "[punto de venta]",
+      "pregunta": "¿Dónde te encuentran? Dime tu dirección o cómo te ubican.",
+      "por_que": "Sirve para ubicar al cliente y cerrar con la invitación a visitarte.",
+      "si_no_tiene": "Graba tu puesto, tienda o casa-taller y di tu horario y cómo te piden."
+    }
+  ]
+}
